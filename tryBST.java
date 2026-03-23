@@ -132,5 +132,12 @@ public class tryBST {
             System.out.printf("Run %d: Build Time = %d ms, Delete Time = %d ms\n", i + 1, times[i], timesDelete[i]);
         }
     }
+    public static double stdDev(long[] times, double mean) {
+        double sum = 0;
+        for (long time : times) {
+            sum += Math.pow(time - mean, 2);
+        }
+        return Math.sqrt(sum / times.length);
+    }
 }
 
