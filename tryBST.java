@@ -67,4 +67,11 @@ class BST{
         }
         return root;
     }
+    private int minValue(Node root){
+        int minv = root.data;
+        while(root.left != null){
+            minv = root.left.data;
+            root = root.left;
+        }
+        return minv;
 }
