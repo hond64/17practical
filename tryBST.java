@@ -89,4 +89,48 @@ class BST{
         return maxv;
     }
 }
+public class tryBST {
+    public static void main(String[] args) {
+        int n = 15;
+        int max = (int) Math.pow(2, n) - 1;
+        int runs = 30;
+        long totalTime = 0;
+        long totalTimeDelete = 0;
+
+        long[] times = new long[runs];
+        long[] timesDelete = new long[runs];
+
+        for (int i = 0; i < runs; i++) {
+            BST bst = new BST();
+
+            long startTime = System.currentTimeMillis();
+            bst .buildBalanced(1, max);
+            long endTime = System.currentTimeMillis();
+            if(!bst.isBST()){
+                System.out.println("Not a BST");
+                return;
+            }
+            long startTimeDelete = System.currentTimeMillis();
+            bst.removeEvens();
+            long endTimeDelete = System.currentTimeMillis();
+            times[i] = endTime - startTime;
+            timesDelete[i] = endTimeDelete - startTimeDelete;
+            totalTime += times[i];
+            totalTimeDelete += timesDelete[i];
+        }
+        double avgInsertTime = (double) totalTime / runs;
+        double avgDeleteTime = (double) totalTimeDelete / runs;
+
+        double stdInsert = stdDev(times, avgInsertTime);
+        double stdDelete = stdDev(timesDelete, avgDeleteTime);
+
+        System..out.println("\nResults:\n");
+        System.out.printf("Average time to build balanced BST: %.2f ms (Std Dev: %.2f ms)\n", avgInsertTime, stdInsert);
+        System.out.printf("Average time to delete even numbers: %.2f ms (Std Dev: %.2f ms)\n", avgDeleteTime, stdDelete);
+        System.out.println("\nTimes for each run:");
+        for (int i = 0; i < runs; i++) {
+            System.out.printf("Run %d: Build Time = %d ms, Delete Time = %d ms\n", i + 1, times[i], timesDelete[i]);
+        }
+    }
+}
 
