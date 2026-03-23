@@ -13,87 +13,99 @@ class Node {
         left = right = null;
     }
 }
-class BST{
+
+class BST {
     Node root;
-    public Node insert(Node root, int data){
-        if(root == null){
-            root = new Node(data);
-            return root;
+
+    public Node insert(Node root, int data) {
+        if (root == null) {
+            return new Node(data);
         }
-        if(data < root.data){
+
+        if (data < root.data) {
             root.left = insert(root.left, data);
-        } else if(data > root.data){
+        } else if (data > root.data) {
             root.right = insert(root.right, data);
         }
+
         return root;
     }
-    public void buildBalanced(int[] arr, int start, int end){
-        if(start > end){
-            return;
-        }
-        int mid = (start + end) / 2;
+
+    // Build balanced BST from sorted array
+    public void buildBalanced(int[] arr, int start, int end) {
+        if (start > end) return;
+
+        int mid = start + (end - start) / 2;
         root = insert(root, arr[mid]);
+
         buildBalanced(arr, start, mid - 1);
         buildBalanced(arr, mid + 1, end);
     }
-    public boolean isBST(){
+
+    // Check if tree is BST
+    public boolean isBST() {
         return isBSTUtil(root, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
-    private boolean isBSTUtil(Node node, int min, int max){
-        if(node == null){
-            return true;
-        }
-        if(node.data <= min || node.data >= max){
-            return false;
-        }
-        return isBSTUtil(node.left, min, node.data) && isBSTUtil(node.right, node.data, max);
+
+    private boolean isBSTUtil(Node node, int min, int max) {
+        if (node == null) return true;
+
+        if (node.data <= min || node.data >= max) return false;
+
+        return isBSTUtil(node.left, min, node.data) &&
+               isBSTUtil(node.right, node.data, max);
     }
-    public Node delete(Node root, int key){
-        if(root == null){
-            return root;
-        }
-        if(key < root.data){
+
+    // Delete node
+    public Node delete(Node root, int key) {
+        if (root == null) return root;
+
+        if (key < root.data) {
             root.left = delete(root.left, key);
-        } else if(key > root.data){
+        } else if (key > root.data) {
             root.right = delete(root.right, key);
         } else {
-            if(root.left == null){
-                return root.right;
-            } else if(root.right == null){
-                return root.left;
-            }
+            // Node with one child or no child
+            if (root.left == null) return root.right;
+            else if (root.right == null) return root.left;
+
+            // Node with two children
             root.data = minValue(root.right);
             root.right = delete(root.right, root.data);
         }
+
         return root;
     }
-    private int minValue(Node root){
+
+    private int minValue(Node root) {
         int minv = root.data;
-        while(root.left != null){
+        while (root.left != null) {
             minv = root.left.data;
             root = root.left;
         }
         return minv;
     }
-    private void removeEvens(Node node){
-     for(int i = 2; i <=maxValue(node); i+=2){
-         root = delete(root, i);
-     }
-    }
-    private int maxValue(Node root){
-        int maxv = root.data;
-        while(root.right != null){
-            maxv = root.right.data;
-            root = root.right;
+
+    // Remove even numbers (efficient traversal)
+    public void removeEvens(Node node) {
+        if (node == null) return;
+
+        removeEvens(node.left);
+        removeEvens(node.right);
+
+        if (node.data % 2 == 0) {
+            root = delete(root, node.data);
         }
-        return maxv;
     }
 }
+
 public class tryBST {
+
     public static void main(String[] args) {
         int n = 15;
         int max = (int) Math.pow(2, n) - 1;
         int runs = 30;
+
         long totalTime = 0;
         long totalTimeDelete = 0;
 
@@ -103,35 +115,49 @@ public class tryBST {
         for (int i = 0; i < runs; i++) {
             BST bst = new BST();
 
+            // Create sorted array
+            int[] arr = new int[max];
+            for (int j = 0; j < max; j++) {
+                arr[j] = j + 1;
+            }
+
             long startTime = System.currentTimeMillis();
-            bst .buildBalanced(1, max);
+            bst.buildBalanced(arr, 0, max - 1);
             long endTime = System.currentTimeMillis();
-            if(!bst.isBST()){
+
+            if (!bst.isBST()) {
                 System.out.println("Not a BST");
                 return;
             }
+
             long startTimeDelete = System.currentTimeMillis();
-            bst.removeEvens();
+            bst.removeEvens(bst.root);
             long endTimeDelete = System.currentTimeMillis();
+
             times[i] = endTime - startTime;
             timesDelete[i] = endTimeDelete - startTimeDelete;
+
             totalTime += times[i];
             totalTimeDelete += timesDelete[i];
         }
+
         double avgInsertTime = (double) totalTime / runs;
         double avgDeleteTime = (double) totalTimeDelete / runs;
 
         double stdInsert = stdDev(times, avgInsertTime);
         double stdDelete = stdDev(timesDelete, avgDeleteTime);
 
-        System..out.println("\nResults:\n");
+        System.out.println("\nResults:\n");
         System.out.printf("Average time to build balanced BST: %.2f ms (Std Dev: %.2f ms)\n", avgInsertTime, stdInsert);
         System.out.printf("Average time to delete even numbers: %.2f ms (Std Dev: %.2f ms)\n", avgDeleteTime, stdDelete);
+
         System.out.println("\nTimes for each run:");
         for (int i = 0; i < runs; i++) {
-            System.out.printf("Run %d: Build Time = %d ms, Delete Time = %d ms\n", i + 1, times[i], timesDelete[i]);
+            System.out.printf("Run %d: Build Time = %d ms, Delete Time = %d ms\n",
+                    i + 1, times[i], timesDelete[i]);
         }
     }
+
     public static double stdDev(long[] times, double mean) {
         double sum = 0;
         for (long time : times) {
