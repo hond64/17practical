@@ -27,4 +27,16 @@ class BST{
         }
         return root;
     }
+    public void buildBalanced(int[] arr, int start, int end){
+        if(start > end){
+            return;
+        }
+        int mid = (start + end) / 2;
+        root = insert(root, arr[mid]);
+        buildBalanced(arr, start, mid - 1);
+        buildBalanced(arr, mid + 1, end);
+    }
+    public boolean isBST(){
+        return isBSTUtil(root, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
 }
