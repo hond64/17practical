@@ -39,4 +39,32 @@ class BST{
     public boolean isBST(){
         return isBSTUtil(root, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
+    private boolean isBSTUtil(Node node, int min, int max){
+        if(node == null){
+            return true;
+        }
+        if(node.data <= min || node.data >= max){
+            return false;
+        }
+        return isBSTUtil(node.left, min, node.data) && isBSTUtil(node.right, node.data, max);
+    }
+    public Node delete(Node root, int key){
+        if(root == null){
+            return root;
+        }
+        if(key < root.data){
+            root.left = delete(root.left, key);
+        } else if(key > root.data){
+            root.right = delete(root.right, key);
+        } else {
+            if(root.left == null){
+                return root.right;
+            } else if(root.right == null){
+                return root.left;
+            }
+            root.data = minValue(root.right);
+            root.right = delete(root.right, root.data);
+        }
+        return root;
+    }
 }
