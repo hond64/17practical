@@ -74,4 +74,19 @@ class BST{
             root = root.left;
         }
         return minv;
+    }
+    private void removeEvens(Node node){
+     for(int i = 2; i <=maxValue(node); i+=2){
+         root = delete(root, i);
+     }
+    }
+    private int maxValue(Node root){
+        int maxv = root.data;
+        while(root.right != null){
+            maxv = root.right.data;
+            root = root.right;
+        }
+        return maxv;
+    }
 }
+
